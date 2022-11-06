@@ -1,5 +1,9 @@
 dataset/glove.42B.300d.txt
+dataset/TripAdvisor/*.csv
+dataset/TripAdvisor/*.json
+dataset/TripAdvisor/*.dat
 output/
+checkpoints/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

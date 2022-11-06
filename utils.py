@@ -1,5 +1,18 @@
 # some convenient functions used in this project
 # reference: https://github.com/d2l-ai/d2l-en
+import os
+import torch
+from torch import nn
+import torch.nn.functional as F
+import matplotlib.pyplot as plt
+from matplotlib_inline import backend_inline
+from IPython import display
+import time
+import sklearn.metrics
+import json
+import collections
+import numpy as np
+
 def try_gpu(i=0):  #@save
     """Return gpu(i) if exists, otherwise return cpu()."""
     if torch.cuda.device_count() >= i + 1:
@@ -110,3 +123,112 @@ class Timer:
     def cumsum(self):
         """Return the accumulated time."""
         return np.array(self.times).cumsum().tolist()
+
+
+def accuracy(y_pred, y):
+    """Compute the number of correct predictions.
+    Defined in :numref:`sec_utils`"""
+    if len(y_pred.shape) > 1 and y_pred.shape[1] > 1:
+        y_pred = torch.argmax(y_pred, axis=1)
+    cmp = (y_pred.type(y.dtype)) == y
+    return float(torch.sum(cmp.type(y.dtype)))
+
+def evaluate_loss_and_acc_gpu(net, data_iter, loss=None, device=None):
+    """Compute the accuracy for a model on a dataset using a GPU."""
+    if isinstance(net, nn.Module):
+        net.eval()  # Set the model to evaluation mode
+        if not device:
+            device = next(iter(net.parameters())).device
+    # No. of correct predictions, no. of predictions
+    if loss:
+        metric = Accumulator(3)
+    else:
+        metric = Accumulator(2)
+    
+    with torch.no_grad():
+        for batch in data_iter:
+            if isinstance(batch, dict):
+                for k, v in batch.items():
+                    batch[k] = batch[k].to(device)
+            else:
+                batch = batch.to(device)
+            y = batch['label_id']
+            y_pred = net(**batch)
+            if loss:
+                metric.add(loss(y_pred, y).sum(), accuracy(y_pred, y), torch.numel(y))
+            else:
+                metric.add(accuracy(y_pred, y), torch.numel(y))
+    return (metric[0] / metric[2], metric[1] / metric[2]) if loss else metric[0] / metric[1]
+
+def test(net, data_iter, output_dir=None, device=None):
+    net.eval()
+    full_logits=[]
+    full_label_ids=[]
+    full_aspect_ids = []
+    for i, batch in enumerate(data_iter):
+        with torch.no_grad():
+            if isinstance(batch, dict):
+                for k, v in batch.items():
+                    batch[k] = batch[k].to(device)
+            else:
+                batch = batch.to(device)
+            
+            logits = net(**batch)
+            logits = logits.detach().cpu().numpy()
+            y = batch['label_id'].cpu().numpy()
+            aspect_id = batch['aspect_id'].cpu().numpy()
+
+            full_logits.extend(logits.tolist())
+            full_label_ids.extend(y.tolist())
+            full_aspect_ids.extend(aspect_id.tolist())
+    
+    
+    y_pred = [np.argmax(logit) for logit in full_logits]
+    y_true = full_label_ids
+    f1 =sklearn.metrics.f1_score(y_true, y_pred, average='macro')
+    acc =sklearn.metrics.accuracy_score(y_true, y_pred)
+    print(f"test on final epoch -- acc: {acc*100 :.2f}, f1-macro: {f1*100 :.2f}")
+    if output_dir:
+        output_eval_json = os.path.join(output_dir, str(net.__class__.__name__) + "_predictions.json") 
+        with open(output_eval_json, "w") as fw:
+            json.dump({"logits": full_logits, "label_ids": full_label_ids, "aspect_ids": full_aspect_ids}, fw)
+            
+def test_on_checkpoint(net, file_path, data_iter, output_dir=None, device=None):
+    state_dict = torch.load(file_path, map_location=device)
+    new_state_dict = collections.OrderedDict()
+    for k, v in state_dict.items():
+        name = k[7:] # remove `module.`
+        new_state_dict[name] = v
+    net.load_state_dict(new_state_dict)
+    net.to(device)
+    net.eval()
+    full_logits=[]
+    full_label_ids=[]
+    full_aspect_ids = []
+    for i, batch in enumerate(data_iter):
+        with torch.no_grad():
+            if isinstance(batch, dict):
+                for k, v in batch.items():
+                    batch[k] = batch[k].to(device)
+            else:
+                batch = batch.to(device)
+            
+            logits = net(**batch)
+            logits = logits.detach().cpu().numpy()
+            y = batch['label_id'].cpu().numpy()
+            aspect_id = batch['aspect_id'].cpu().numpy()
+
+            full_logits.extend(logits.tolist())
+            full_label_ids.extend(y.tolist())
+            full_aspect_ids.extend(aspect_id.tolist())
+    
+    
+    y_pred = [np.argmax(logit) for logit in full_logits]
+    y_true = full_label_ids
+    f1 =sklearn.metrics.f1_score(y_true, y_pred, average='macro')
+    acc =sklearn.metrics.accuracy_score(y_true, y_pred)
+    print(f"test on {file_path} -- acc: {acc*100 :.2f}, f1-macro: {f1*100 :.2f}")
+    if output_dir:
+        output_eval_json = os.path.join(output_dir, str(net.__class__.__name__) + "_predictions.json") 
+        with open(output_eval_json, "w") as fw:
+            json.dump({"logits": full_logits, "label_ids": full_label_ids, "aspect_ids": full_aspect_ids}, fw)

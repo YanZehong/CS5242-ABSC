@@ -1,7 +1,13 @@
+import os
 import json
-import xml.etree.ElementTree as ET
+import pickle
 import numpy as np
 import pandas as pd
+import math
+import collections
+import nltk
+# nltk.download('punkt')
+import matplotlib.pyplot as plt
 
 class Tokenizer(object):
     """Construct a tokenizer."""
@@ -54,7 +60,8 @@ def build_tokenizer(all_examples, aspects, max_seq_len, dat_fname):
         pickle.dump(tokenizer, open(dat_fname, 'wb'))
         
         plt.figure()
-        plt.hist([length_dict[0] + length_dict[1] + length_dict[2]], bins=range(0, 100, 10))
+        plt.hist([length_dict[0] + length_dict[1] + length_dict[2]], bins=range(0, max_seq_len, 10))
+        plt.show()
         print(f'max_length = {max(max(length_dict[0]), max(length_dict[1]), max(length_dict[2]))}')
         print(f'avg_length = {(sum(length_dict[0])+sum(length_dict[1])+sum(length_dict[2]))/(len(length_dict[0])+len(length_dict[1])+len(length_dict[2])) :.2f}')
     return tokenizer
@@ -141,10 +148,7 @@ class ABSCProcessor(object):
     
     def get_aspects(self):
         """Return aspects for specific dataset"""
-        if self.name == "SemEval14":
-            return ["food", "service", "price", "ambience", "miscellaneous"]
-        elif self.name == "TripAdvisor":
-            return ["value", "location", "service", "room", "clean", "sleep"]
+        return ["value", "location", "service", "room", "clean", "sleep"]
         
     def get_labels(self):
         """Return labels for specific dataset"""
@@ -156,10 +160,7 @@ class ABSCProcessor(object):
         for (i, key) in enumerate(lines):
             unique_id = key
             aspect = lines[key]['aspect']
-            if self.name == "SemEval14":
-                text = lines[key]['sentence']
-            elif self.name == "TripAdvisor":
-                text = lines[key]['text']
+            text = lines[key]['text']
             label = lines[key]['polarity']
             examples.append(InputExample(unique_id=unique_id, aspect=aspect, text=text, label=label))
         return examples  
@@ -169,48 +170,11 @@ class ABSCProcessor(object):
         with open(input_file) as f:
             return json.load(f)
 
-class ABSCDataset(Dataset):
-    """Build dataset and convert examples to features"""
-    def __init__(self, name, examples, tokenizer):
-        self.name = name
-        self.examples = examples
-        self.tokenizer = tokenizer
-        self.convert_data_to_features()
-    
-    def convert_data_to_features(self):
-        """convert examples to features"""
-        if self.name == "SemEval14":
-            label_map = {"negative": 0, "neutral": 1, "positive": 2}
-            aspect_map = {"food": 0,"service": 1, "price": 2, "ambience": 3, "miscellaneous": 4}
-        elif self.name == "TripAdvisor":
-            label_map = {0: 0, 1: 1, 2: 2}
-            aspect_map = {"value":0, "location":1, "service":2, "room":3, "clean":4, "sleep":5}
-
-        output = []
-        for (i, example) in enumerate(tqdm(self.examples)):
-            input_ids = self.tokenizer.convert_tokens_to_ids(example.text)
-            aspect_token_id = self.tokenizer.word2idx[example.aspect]
-            aspect_id = aspect_map[example.aspect]
-            label_id = label_map[example.label]
-            
-            feature = {
-                "input_ids": input_ids,
-                "aspect_token_id": aspect_token_id,
-                "aspect_id": aspect_id,
-                "label_id": label_id
-            }
-            output += [feature]
-        self.data = output
-        
-    def __getitem__(self, index):
-        return self.data[index]
-
-    def __len__(self):
-        return len(self.data)
-
-def parse_Dataset(data_dir, mode):
+def parse_dataset(data_dir, mode):
     """read data from csv file"""
-    df = pd.read_csv(os.path.join(data_dir, mode + '.csv'))
+    polar_idx={'negative': 0, 'neutral': 1, 'positive': 2}
+    aspects_names = {"Value":"value", "Location": "location", "Service":"service", "Rooms": "room", "Cleanliness": "clean", "Sleep Quality": "sleep"}
+    df = pd.read_csv(data_dir+ mode + '.csv')
     corpus=[]
     label_cnt= np.zeros(len(polar_idx))
     for i, row in df.iterrows():
@@ -226,56 +190,3 @@ def parse_Dataset(data_dir, mode):
     print(f"ratio: [{label_cnt[0]/sum(label_cnt)*100 :.1f}%, {label_cnt[1]/sum(label_cnt)*100 :.1f}%, {label_cnt[2]/sum(label_cnt)*100 :.1f}%]")
     print(f"#examples: {len(corpus)}")
     return corpus
-
-def load_TripAdvisor():
-    polar_idx={'negative': 0, 'neutral': 1, 'positive': 2}
-    aspects_names = {"Value":"value", "Location": "location", "Service":"service", "Rooms": "room", "Cleanliness": "clean", "Sleep Quality": "sleep"}
-
-    print("Load traning corpus:")
-    train_corpus=parse_Dataset('dataset/TripAdvisor', 'train')
-    with open("dataset/TripAdvisor/train.json", "w") as fw:
-        json.dump({line["id"]: line for line in train_corpus}, fw, sort_keys=True, indent=4)
-        
-    print("Load development corpus:")
-    dev_corpus=parse_Dataset("dataset/TripAdvisor", "dev")
-    with open("dataset/TripAdvisor/dev.json", "w") as fw:
-        json.dump({line["id"]: line for line in dev_corpus}, fw, sort_keys=True, indent=4)
-        
-    print("Load testing corpus:")
-    test_corpus=parse_Dataset("dataset/TripAdvisor", "test")
-    with open("dataset/TripAdvisor/test.json", "w") as fw:
-        json.dump({line["id"]: line for line in test_corpus}, fw, sort_keys=True, indent=4)
-
-def parse_SemEval14(fn):
-    """read data from xml file"""
-    root=ET.parse(fn).getroot()
-    corpus=[]
-    opin_cnt=[0]*len(polar_idx)
-    for sent in root.iter("sentence"):
-        opins=set()
-        for opin in sent.iter('aspectCategory'):
-            if opin.attrib['category']!="NULL":
-                if opin.attrib['category'] in aspects_names.keys() and opin.attrib['polarity'] in polar_idx:
-                    opins.add((aspects_names[opin.attrib['category']], opin.attrib['polarity']))
-        for idx, opin in enumerate(opins):
-            opin_cnt[polar_idx[opin[-1]]]+=1
-            corpus.append({"id": sent.attrib['id']+"_"+str(idx), "sentence": sent.find('text').text, "aspect": opin[0], "polarity": opin[-1]})
-    print(f"distribution of [negative, neutral, positive]: {opin_cnt}")
-    print(f"#examples: {len(corpus)}")
-    return corpus
-
-def load_SemEval14(): 
-    valid_split=150
-    polar_idx={'negative': 0, 'neutral': 1, 'positive': 2}
-    aspects_names = {"food": "food","service": "service", "price": "price", "ambience": "ambience", "anecdotes/miscellaneous": "miscellaneous"}
-    print("Load traning corpus:")
-    train_corpus=parse_SemEval14('dataset/SemEval14/Restaurants_Train_v2.xml')
-    with open("dataset/SemEval14/train.json", "w") as fw:
-        json.dump({rec["id"]: rec for rec in train_corpus[:-valid_split] }, fw, sort_keys=True, indent=4)
-    with open("dataset/SemEval14/dev.json", "w") as fw:
-        json.dump({rec["id"]: rec for rec in train_corpus[-valid_split:] }, fw, sort_keys=True, indent=4)
-    print("Load testing corpus:")
-    test_corpus=parse_SemEval14('dataset/SemEval14/Restaurants_Test_Gold.xml')
-    with open("dataset/SemEval14/test.json", "w") as fw:
-        json.dump({rec["id"]: rec for rec in test_corpus}, fw, sort_keys=True, indent=4)
-
