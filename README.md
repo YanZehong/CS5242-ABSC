@@ -52,7 +52,7 @@ Group26: Yan Zehong, Luo Jian, Zhao Yijing.
 <table>
   <tr>
     <td align="center"><a href="https://github.com/YanZehong"><img src="https://github.com/YanZehong.png" width="100px;" alt=""/><br /><sub><b>Yan Zehong</b></sub></a><br /><a href="https://github.com/YanZehong/CS5242-ABSC" title="Code">💻</a></td>
-    <td align="center"><a href="https://github.com/LUOJIAN-GZ"><img src="https://avatars0.githubusercontent.com/u/37891032?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Luo Jian </b></sub></a><br /><a href="https://github.com/YanZehong/CS5242-ABSC" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/LUOJIAN-GZ"><img src="https://avatars2.githubusercontent.com/u/36967362?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Luo Jian </b></sub></a><br /><a href="https://github.com/YanZehong/CS5242-ABSC" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/zhaoyijing24"><img src="https://avatars0.githubusercontent.com/u/37891032?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Zhao Yijing</b></sub></a><br /><a href="https://github.com/YanZehong/CS5242-ABSC" title="Code">💻</a></td>
   </tr>
 </table>
