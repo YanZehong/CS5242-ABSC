@@ -4,6 +4,8 @@ dataset/TripAdvisor/*.json
 dataset/TripAdvisor/*.dat
 output/
 checkpoints/
+run.py
+nohup.out
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
