@@ -1,7 +1,7 @@
 # CS5242-ABSC
 [![Python Versions](https://img.shields.io/badge/python-3.9%20%7C%203.9-blue)](https://www.python.org/downloads/)
 
-In this project, we focus on the aspect-based sentiment classification (ABSC). To be specific, the sentence “The restaurant was expensive, but the food was great” would be assigned with a negative polarity for the aspect PRICE, whereas the aspect FOOD has positive polarity. Implement MLP, CNNs, RNNs, ANNs*, and related improved versions on the dataset we collected on [Tripadvisor](https://www.tripadvisor.com.sg/). Specifically, it contains six aspects (value, location, service, rooms, cleanliness, sleep quality). Ratings of each review are on scales of 1 to 5. We convert original scales to sentiment polarities as follows: 1 and 2 stars are treated as negative; 3 is neutral; 4 and 5 stars are treated as positive. [Github Link](https://github.com/YanZehong/CS5242-ABSC)
+In this project, we focus on the aspect-based sentiment classification (ABSC). To be specific, the sentence “The restaurant was expensive, but the food was great” would be assigned with a negative polarity for the aspect PRICE, whereas the aspect FOOD has positive polarity. We implement MLP, CNNs, RNNs, ANNs*, and related improved versions on the dataset we collected on [Tripadvisor](https://www.tripadvisor.com.sg/). [Project Github Link](https://github.com/YanZehong/CS5242-ABSC)
 
 ## Table of Codes
 - Data Collection:  
@@ -51,6 +51,8 @@ We are grateful to CS5242 for giving us such a valuable experience.
 Group26: Yan Zehong, Luo Jian, Zhao Yijing.  
 <table>
   <tr>
-    <td align="center"><a href="https://github.com/YanZehong"><img src="https://avatars2.githubusercontent.com/u/36967362?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Alberto Paz</b></sub></a><br /><a href="https://github.com/YanZehong/CS5242-ABSC" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/YanZehong"><img src="https://github.com/YanZehong.png" width="100px;" alt=""/><br /><sub><b>Yan Zehong</b></sub></a><br /><a href="https://github.com/YanZehong/CS5242-ABSC" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/LUOJIAN-GZ"><img src="https://avatars0.githubusercontent.com/u/37891032?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Luo Jian </b></sub></a><br /><a href="https://github.com/YanZehong/CS5242-ABSC" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/zhaoyijing24"><img src="https://avatars0.githubusercontent.com/u/37891032?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Zhao Yijing</b></sub></a><br /><a href="https://github.com/YanZehong/CS5242-ABSC" title="Code">💻</a></td>
   </tr>
 </table>
