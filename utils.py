@@ -6,6 +6,7 @@ from torch import nn
 import torch.nn.functional as F
 import matplotlib.pyplot as plt
 from matplotlib_inline import backend_inline
+from sklearn.metrics import f1_score, accuracy_score
 from IPython import display
 import time
 import sklearn.metrics
@@ -232,3 +233,64 @@ def test_on_checkpoint(net, file_path, data_iter, output_dir=None, device=None):
         output_eval_json = os.path.join(output_dir, str(net.__class__.__name__) + "_predictions.json") 
         with open(output_eval_json, "w") as fw:
             json.dump({"logits": full_logits, "label_ids": full_label_ids, "aspect_ids": full_aspect_ids}, fw)
+
+
+def eval_results(results, prefix, aspects):
+    col_1, col_2, col_3 = 'Aspects', prefix + '_Acc', prefix + '_F1'
+    outputs = collections.defaultdict(list)
+    y_true = results['label_ids']
+    y_pred = [np.argmax(logit) for logit in results['logits']]
+    acc = accuracy_score(y_true, y_pred)
+    f1 = f1_score(y_true, y_pred, average='macro')
+    outputs[col_1].append('All')
+    outputs[col_2].append(acc)
+    outputs[col_3].append(f1)
+
+    aspect_dict = {}
+    for aspect_id, aspect in enumerate(aspects):
+        aspect_dict[aspect_id] = ([], [])
+
+    for i, aspect_id in enumerate(results['aspect_ids']):
+        aspect_dict[aspect_id][0].append(y_true[i])
+        aspect_dict[aspect_id][1].append(y_pred[i])
+
+    for k, v in aspect_dict.items():
+        acc = accuracy_score(v[0], v[1])
+        f1 = f1_score(v[0], v[1], average='macro')
+        outputs[col_1].append(aspects[k])
+        outputs[col_2].append(acc)
+        outputs[col_3].append(f1)
+    return pd.DataFrame(outputs)
+
+def calculate_mean(results, model, aspects):
+    accs = []
+    for i, res in enumerate(results):
+        if i == 0:
+            df_mean = eval_results(res, model, aspects)
+            df_mean["Aspects"] = [a.upper() for a in df_mean["Aspects"]]
+            df_mean[model + '_Acc'] = df_mean[model + '_Acc'].astype(float)
+            df_mean[model + '_F1'] = df_mean[model + '_F1'].astype(float)
+            accs.append(df_mean[model + '_Acc'].astype(float).values[0])
+        else:
+            df_temp = eval_results(res, model, aspects)
+            df_mean[model +
+                    '_Acc'] = df_mean[model +
+                                      '_Acc'] + df_temp[model +
+                                                        '_Acc'].astype(float)
+            df_mean[model +
+                    '_F1'] = df_mean[model +
+                                     '_F1'] + df_temp[model +
+                                                      '_F1'].astype(float)
+            accs.append(df_temp[model + '_Acc'].astype(float).values[0])
+    df_mean[model + '_Acc'] = df_mean[model + '_Acc'] / len(results)
+    df_mean[model + '_F1'] = df_mean[model + '_F1'] / len(results)
+    return df_mean
+
+def read_and_calculate(aspects, paths, model_name):
+    results = []
+    for path in paths:
+        with open(path) as f:
+            res = json.load(f)
+        results.append(res)
+    df = calculate_mean(results, model_name, aspects)
+    return df

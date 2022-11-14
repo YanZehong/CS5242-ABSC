@@ -1,18 +1,18 @@
 # CS5242-ABSC
 [![Python Versions](https://img.shields.io/badge/python-3.9%20%7C%203.9-blue)](https://www.python.org/downloads/)
 
-In this project, we focus on the aspect-based sentiment classification (ABSC). To be specific, the sentence “The restaurant was expensive, but the food was great” would be assigned with a negative polarity for the aspect PRICE, whereas the aspect FOOD has positive polarity. We implement MLP, CNNs, RNNs, ANNs*, and related improved versions on the dataset we collected on [Tripadvisor](https://www.tripadvisor.com.sg/). [Project Github Link](https://github.com/YanZehong/CS5242-ABSC)
+In this project, we focus on the aspect-based sentiment classification (ABSC). To be specific, the sentence “The restaurant was expensive, but the food was great” would be assigned with a negative polarity for the aspect PRICE, whereas the aspect FOOD has positive polarity. We implement MLP, CNNs, RNNs, ANNs*, and related improved versions on the dataset we collected on [Tripadvisor](https://www.tripadvisor.com.sg/).
 
 ## Table of Codes
-- Data Collection:  
-- EDA:  
+- Data Collection: `DataScraper.ipynb`  
+- EDA: `CS5242_GroupID26.ipynb`  
 - DataModule: `CS5242_GroupID26.ipynb`  
     * ABSCDataset  
     * ABSCDatasetForBERT  
 - ModelModule: `CS5242_GroupID26.ipynb`  
     * [MLP variants](./images/MLP.png): MLPs, MLP, MLPv2  
-    * CNN  
-    * RNN  
+    * [CNN](./images/TextCNN.jpg): TextCNNv1, TextCNNv2, TextCNNv3 (mean/max)  
+    * RNN   
     * [Transformer](./images/Transformer.png): TransformerEncoderV0, TransformerEncoderV1, TransformerEncoderV2, TransformerEncoderV3 
     * [BERT](./images/Bert.png): Bert, BertForABSC  
 
@@ -40,7 +40,7 @@ unzip glove.42B.300d.zip
 ```
 Please unzip the txt file in the folder `dataset/`. For non-BERT-based models, GloVe pre-trained word vectors are required, please refer to data_utils.py for more detail. [GloVe](https://nlp.stanford.edu/projects/glove/)
 
-### Runnig on colab
+### Runnig on Colab
 Put the entire CS5242-ABSC folder into the root directory of google drive.
 Put the following code in the first cell of Libraries and execute it.
 ```
@@ -75,12 +75,16 @@ devices = [devices[0]] # specify gpu id
 ## Framework Overview
 
 
+## Milestones
+
+
 ## Note
-Please check `images/` folder for models' illustration.
+Please check `images/` folder for models' figures. More details and result discussion can be found at `CS5242_GroupID26.ipynb`.
 
 ## Acknowledgement
-We are grateful to CS5242 for giving us such a valuable experience.  
+We are grateful to NUS CS5242 for giving us such a valuable experience.  
 Group26: Yan Zehong, Luo Jian, Zhao Yijing.  
+[Project Github Link](https://github.com/YanZehong/CS5242-ABSC)  
 <table>
   <tr>
     <td align="center"><a href="https://github.com/YanZehong"><img src="https://github.com/YanZehong.png" width="100px;" alt=""/><br /><sub><b>Yan Zehong</b></sub></a><br /><a href="https://github.com/YanZehong/CS5242-ABSC" title="Code">💻</a></td>
