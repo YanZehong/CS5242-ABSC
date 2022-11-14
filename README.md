@@ -40,6 +40,35 @@ unzip glove.42B.300d.zip
 ```
 Please unzip the txt file in the folder `dataset/`. For non-BERT-based models, GloVe pre-trained word vectors are required, please refer to data_utils.py for more detail. [GloVe](https://nlp.stanford.edu/projects/glove/)
 
+### Runnig on colab
+Put the entire CS5242-ABSC folder into the root directory of google drive.
+Put the following code in the first cell of Libraries and execute it.
+```
+!pip install matplotlib_inline
+!pip install transformers
+import nltk
+nltk.download('stopwords')
+nltk.download('punkt')
+import os
+from google.colab import drive
+drive.mount('/content/gdrive', force_remount=True)
+path = "/content/gdrive/MyDrive/CS5242-ABSC"
+os.chdir(path)
+
+#download glove embedding data.
+if os.path.isfile("/content/gdrive/MyDrive/CS5242-ABSC/dataset/glove.42B.300d.zip") == False:
+  !wget -P /content/gdrive/MyDrive/CS5242-ABSC/dataset/ https://nlp.stanford.edu/data/glove.42B.300d.zip
+  print("download success.")
+if os.path.isfile("/content/gdrive/MyDrive/CS5242-ABSC/dataset/glove.42B.300d.txt") == False:
+  !unzip /content/gdrive/MyDrive/CS5242-ABSC/dataset/glove*.zip -d /content/gdrive/MyDrive/CS5242-ABSC/dataset/
+  print("unzip success.")
+```
+Before 5.1, modify the following code to use colab's gpu.
+```
+devices= try_all_gpus()
+devices = [devices[0]] # specify gpu id
+```
+
 ## Framework Overview
 
 
