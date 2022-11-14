@@ -13,6 +13,7 @@ import sklearn.metrics
 import json
 import collections
 import numpy as np
+import pandas as pd
 
 def try_gpu(i=0):  #@save
     """Return gpu(i) if exists, otherwise return cpu()."""
