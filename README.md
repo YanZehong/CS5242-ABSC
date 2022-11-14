@@ -62,6 +62,9 @@ if os.path.isfile("/content/gdrive/MyDrive/CS5242-ABSC/dataset/glove.42B.300d.zi
 if os.path.isfile("/content/gdrive/MyDrive/CS5242-ABSC/dataset/glove.42B.300d.txt") == False:
   !unzip /content/gdrive/MyDrive/CS5242-ABSC/dataset/glove*.zip -d /content/gdrive/MyDrive/CS5242-ABSC/dataset/
   print("unzip success.")
+
+!mkdir /content/gdrive/MyDrive/CS5242-ABSC/checkpoints
+!mkdir /content/gdrive/MyDrive/CS5242-ABSC/output
 ```
 Before 5.1, modify the following code to use colab's gpu.
 ```
