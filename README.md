@@ -73,9 +73,10 @@ devices = [devices[0]] # specify gpu id
 ```
 
 ## Framework Overview
-
+<!-- ![model-framework](https://github.com/YanZehong/CS5228-404/blob/main/images/model_framework.png?raw=true) -->
 
 ## Milestones
+![timelines](https://github.com/YanZehong/CS5242-ABSC/blob/main/images/milestones.png?raw=true)
 
 
 ## Note
