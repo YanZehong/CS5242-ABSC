@@ -12,7 +12,7 @@ In this project, we focus on the aspect-based sentiment classification (ABSC). T
 - ModelModule: `CS5242_GroupID26.ipynb`  
     * [MLP variants](./images/MLP.png): MLPs, MLP, MLPv2  
     * [CNN](./images/TextCNN.jpg): TextCNNv1, TextCNNv2, TextCNNv3 (mean/max)  
-    * RNN   
+    * [RNN](./images/LSTM.png): RNNV0, RNNV1, RNNV2
     * [Transformer](./images/Transformer.png): TransformerEncoderV0, TransformerEncoderV1, TransformerEncoderV2, TransformerEncoderV3 
     * [BERT](./images/Bert.png): Bert, BertForABSC  
 
