@@ -16,6 +16,15 @@ In this project, we focus on the aspect-based sentiment classification (ABSC). T
     * [Transformer](./images/Transformer.png): TransformerEncoderV0, TransformerEncoderV1, TransformerEncoderV2, TransformerEncoderV3 
     * [BERT](./images/Bert.png): Bert, BertForABSC  
 
+## 10-Minute Quick Test
+
+Make your life easier. Please download all checkpoints first.
+
+```
+pip install -r requirements.txt
+python test_checkpoints.py 
+```
+
 ## Project Set Up
 
 This is a list of all requirements used in this project.
