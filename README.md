@@ -1,5 +1,7 @@
 # CS5242-ABSC
-[![Python Versions](https://img.shields.io/badge/python-3.9%20%7C%203.9-blue)](https://www.python.org/downloads/)
+[![python](https://img.shields.io/badge/-Python_3.7_%7C_3.8_%7C_3.9_%7C_3.10-blue?logo=python&logoColor=white)](https://github.com/pre-commit/pre-commit)
+[![pytorch](https://img.shields.io/badge/PyTorch_1.13+-ee4c2c?logo=pytorch&logoColor=white)](https://pytorch.org/get-started/locally/)
+[![license](https://img.shields.io/badge/License-MIT-green.svg?labelColor=gray)](https://github.com/ashleve/lightning-hydra-template#license)
 
 In this project, we focus on the aspect-based sentiment classification (ABSC). To be specific, the sentence “The restaurant was expensive, but the food was great” would be assigned with a negative polarity for the aspect PRICE, whereas the aspect FOOD has positive polarity. We implement MLP, CNNs, RNNs, ANNs*, and related improved versions on the dataset we collected on [Tripadvisor](https://www.tripadvisor.com.sg/).
 
